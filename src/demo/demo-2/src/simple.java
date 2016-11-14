@@ -34,11 +34,12 @@ public class simple
  	
     public static void main(String [] args) throws ExportException, IOException
     {
-    	File timestepData = new File("timestepData.csv");
-    	File linearEqs = new File("linearEqs.csv");
+    	File timestepData = new File("../../../data/timestepData.csv");
+    	File linearEqs = new File("../../../data/linearEqs.csv");
     	FileWriter timestepfw = new FileWriter(timestepData.getAbsoluteFile());
     	FileWriter linearfw = new FileWriter(linearEqs.getAbsoluteFile());
-    	timestepfw.write("t, Y(t+1), Y(t), Total P Adopters, Total Q Adopters\n");
+    	timestepfw.write("t,Y(t+1),Y(t),Total P Adopters,Total Q Adopters\n");
+    	linearfw.write("S(t+1),aCo,bCo,cCo\n");
     	
     	Scanner scanner = new Scanner(System.in);
         System.out.println("How many nodes?");
@@ -53,7 +54,6 @@ public class simple
      	
      	// Simple adoption
      	do {
-     		t++;
      		consequentAdoption(graph,ni);
          	try {
          		//System.out.println(fileCount);
@@ -66,6 +66,7 @@ public class simple
          	timestepfw.write(t + "," + totalAdoptersAdd1 + "," + totalAdopters + "," + totalPAdopters + "," + totalQAdopters +"\n");
          	linearfw.write(totalAdoptersAdd1-totalAdopters + "," + 1 + "," + totalAdopters + "," + totalAdopters*totalAdopters + "\n");
          	System.out.println("t: " +t+ "\t Y(t+1): " +totalAdoptersAdd1+ "\t Y(t): " +totalAdopters+  "\t p Adopters: " +totalPAdopters+ "\t q adopters: " +totalQAdopters);
+     		t++;
         } while (totalAdopters < noNodes);
      	timestepfw.close();
      	linearfw.close();
