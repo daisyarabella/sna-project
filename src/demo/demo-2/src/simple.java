@@ -34,9 +34,11 @@ public class simple
  	
     public static void main(String [] args) throws ExportException, IOException
     {
-    	File csvFile = new File("timestepData.csv");
-    	FileWriter csvfw = new FileWriter(csvFile.getAbsoluteFile());
-    	csvfw.write("t, Y(t+1), Y(t), Total P Adopters, Total Q Adopters\n");
+    	File timestepData = new File("timestepData.csv");
+    	File linearEqs = new File("linearEqs.csv");
+    	FileWriter timestepfw = new FileWriter(timestepData.getAbsoluteFile());
+    	FileWriter linearfw = new FileWriter(linearEqs.getAbsoluteFile());
+    	timestepfw.write("t, Y(t+1), Y(t), Total P Adopters, Total Q Adopters\n");
     	
     	Scanner scanner = new Scanner(System.in);
         System.out.println("How many nodes?");
@@ -60,11 +62,13 @@ public class simple
     			// TODO Auto-generated catch block
     			e.printStackTrace();
     		}
-         	//exportCSV(t,totalAdoptersAdd1,totalAdopters,totalPAdopters,totalQAdopters);	
-         	csvfw.write(t + "," + totalAdoptersAdd1 + "," + totalAdopters + "," + totalPAdopters + "," + totalQAdopters +"\n");
+         	//exportCSV
+         	timestepfw.write(t + "," + totalAdoptersAdd1 + "," + totalAdopters + "," + totalPAdopters + "," + totalQAdopters +"\n");
+         	linearfw.write(totalAdoptersAdd1-totalAdopters + "," + 1 + "," + totalAdopters + "," + totalAdopters*totalAdopters + "\n");
          	System.out.println("t: " +t+ "\t Y(t+1): " +totalAdoptersAdd1+ "\t Y(t): " +totalAdopters+  "\t p Adopters: " +totalPAdopters+ "\t q adopters: " +totalQAdopters);
         } while (totalAdopters < noNodes);
-     	csvfw.close();
+     	timestepfw.close();
+     	linearfw.close();
      	
     }
 
