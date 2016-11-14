@@ -1,6 +1,9 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.Set;
 
+import java.awt.List;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,50 +17,54 @@ import org.jgrapht.ext.GraphMLExporter;
 
 import LabelledNode.LabelledNode;
 import NameProvider.NameProvider;
+import timestepData.timestepData;
 
 public class simple
 {
 	// Choose values for p and q based on study by Sultan, Farley, and Lehmann in 1990
  	static double p = 0.03; // Fixed coefficient of innovation
- 	static double q = 0.38; // Fixed coefficient of imitation
- 	static int noAdoptions = 0;
+ 	static double q = 0.2; // Fixed coefficient of imitation
+ 	static int totalAdopters = 0;
+ 	static int totalAdoptersAdd1 = 0;
+ 	static int totalPAdopters = 0;
+ 	static int totalQAdopters = 0;
+ 	static int t = 0;
+ 	static int Yt1 = 0;
  	static int fileCount = 1;
  	
-    public static void main(String [] args)
+    public static void main(String [] args) throws ExportException, IOException
     {
-    	 Scanner scanner = new Scanner(System.in);
-         System.out.println("How many nodes?");
-         int noNodes = scanner.nextInt();
-         System.out.println("Insert edge probability:");
-         double edgeProb = scanner.nextDouble();
+    	File csvFile = new File("timestepData.csv");
+    	FileWriter csvfw = new FileWriter(csvFile.getAbsoluteFile());
+    	csvfw.write("t, Y(t+1), Y(t), Total P Adopters, Total Q Adopters\n");
+    	
+    	Scanner scanner = new Scanner(System.in);
+        System.out.println("How many nodes?");
+        int noNodes = scanner.nextInt();
+        System.out.println("Insert edge probability:");
+        double edgeProb = scanner.nextDouble();
          
     	//create a graph
         UndirectedGraph<LabelledNode, DefaultEdge> graph = initRandomGraph(noNodes, edgeProb);
         NeighborIndex<LabelledNode, DefaultEdge> ni = new NeighborIndex(graph);
         
-        /* initially set some nodes to adopt by p
-        initAdoption(graph);
-     	try {
-			export(graph);
-		} catch (ExportException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
      	
      	// Simple adoption
      	do {
+     		t++;
      		consequentAdoption(graph,ni);
          	try {
          		//System.out.println(fileCount);
-    			export(graph);
+    			exportGraphML(graph);
     		} catch (ExportException e) {
     			// TODO Auto-generated catch block
     			e.printStackTrace();
     		}
-     		System.out.println("Total number of nodes adopted: " +noAdoptions);
-     		//System.out.println("New number of nodes adopted (p): ");
-     		//System.out.println("New number of nodes adopted (q): ");
-     	} while (noAdoptions < noNodes);
+         	//exportCSV(t,totalAdoptersAdd1,totalAdopters,totalPAdopters,totalQAdopters);	
+         	csvfw.write(t + "," + totalAdoptersAdd1 + "," + totalAdopters + "," + totalPAdopters + "," + totalQAdopters +"\n");
+         	System.out.println("t: " +t+ "\t Y(t+1): " +totalAdoptersAdd1+ "\t Y(t): " +totalAdopters+  "\t p Adopters: " +totalPAdopters+ "\t q adopters: " +totalQAdopters);
+        } while (totalAdopters < noNodes);
+     	csvfw.close();
      	
     }
 
@@ -81,28 +88,14 @@ public class simple
         			LabelledNode edgeNodeA = (LabelledNode) nodes[i];
         			LabelledNode edgeNodeB = (LabelledNode) nodes[j];
        				g.addEdge(edgeNodeA, edgeNodeB);
-       				System.out.println("Added edge between " +((LabelledNode) edgeNodeA).getLabel()+ " and " +((LabelledNode) edgeNodeB).getLabel());
         		}
         	}
         }
         return g;
     }
     
-    /* method to set p and q nodes adopted
-    private static UndirectedGraph<LabelledNode, DefaultEdge> initAdoption(UndirectedGraph<LabelledNode, DefaultEdge> g) {
-    	Object[] nodes = g.vertexSet().toArray(); 
-    	for (Object node : nodes) {
-    		if (Math.random() < p) {
-				((LabelledNode) node).setAdoptedStatus(true);
-				noAdoptions++;
-				//System.out.println("p1Node " +((LabelledNode) node).getLabel()+ " has status " +((LabelledNode) node).getAdoptedStatus());
-			}
-    	}
-    	
-    	return g;
-    }*/
-    
     private static UndirectedGraph<LabelledNode, DefaultEdge> consequentAdoption(UndirectedGraph<LabelledNode, DefaultEdge> g, NeighborIndex<LabelledNode, DefaultEdge> ni) {
+    	totalAdopters = totalAdoptersAdd1;
     	Object[] nodes = g.vertexSet().toArray(); 
     	for (Object node : nodes) {
     		// if node has adopted, getNeighbours of node
@@ -110,25 +103,25 @@ public class simple
     			Set<LabelledNode> neighbors = ni.neighborsOf((LabelledNode) node);
 				// assign q% neighbours with adopted attribute
 				for (Object neighbor : neighbors) {
-					if (Math.random() < q && !((LabelledNode) node).getAdoptedStatus()) {
+					if (Math.random() < q && !((LabelledNode) neighbor).getAdoptedStatus()) {
 						((LabelledNode) neighbor).setAdoptedStatus(true); 
-						noAdoptions++;
+						totalQAdopters++;
+						totalAdoptersAdd1++;
 					}
-				//System.out.println("qNode " +((LabelledNode) neighbor).getLabel()+ " has status " +((LabelledNode) neighbor).getAdoptedStatus());
 				}
 			}
     		// make a further p of the non-adopted nodes adopted
     		else if (Math.random() < p) { 
     			((LabelledNode) node).setAdoptedStatus(true);
-    			noAdoptions++;
+    			totalAdoptersAdd1++;
+    			totalPAdopters++;
     		}
-    		//System.out.println("p2Node " +((LabelledNode) node).getLabel()+ " has status " +((LabelledNode) node).getAdoptedStatus());
     	}
 		return g;
 	
     }   
     
-    private static void export(UndirectedGraph<LabelledNode, DefaultEdge> g) throws ExportException {
+    private static void exportGraphML(UndirectedGraph<LabelledNode, DefaultEdge> g) throws ExportException {
     	try {
 			File file = new File("iteration" +fileCount+ ".graphml");
 
