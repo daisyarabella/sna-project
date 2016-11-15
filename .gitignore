@@ -7,3 +7,4 @@ jgrapht-1.0.0/*
 .plugins/
 *.class
 venv/
+src/.metadata/*
