@@ -35,10 +35,6 @@ def main():
 	print('\np = a/m = '+str(p))
 	print('q = b+p = '+str(q))
 
-	#why is be sometimes <1 and >1
-	# is p working?
-	#what is c for
-	# is m no nodes or is it quadratic
 
 if __name__ == "__main__":
 	main()

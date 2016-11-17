@@ -8,3 +8,5 @@ jgrapht-1.0.0/*
 *.class
 venv/
 src/.metadata/*
+src/demo/demo-2/.metadata/
+src/demo/demo-2/src/.metadata/
