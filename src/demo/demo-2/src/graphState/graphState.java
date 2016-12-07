@@ -8,6 +8,7 @@ public class graphState extends Object {
 	private int extAdoptionCount;
 	private int t;
 	private int fileCount;
+	private int loopNumber;
 	private boolean internalAdoptionHappen;
 
 	public graphState() {
@@ -18,6 +19,7 @@ public class graphState extends Object {
  	 	this.t = 0; 
  	 	this.fileCount = 1; // to create iteration graphs
  	 	this.internalAdoptionHappen = false;
+ 	 	this.loopNumber = 0;
 	}
  	
  	public int getYt() {
@@ -71,6 +73,14 @@ public class graphState extends Object {
  	public int getFileCount() {
  		return fileCount;
  	} 
+ 
+ 	public int getLoopNumber() {
+ 		return this.loopNumber;
+ 	}
+	
+	public void incrementLoopNumber() {
+		this.loopNumber++;
+	}
  	
  	public void setIntAdoptionHappen(boolean bool){
 		this.internalAdoptionHappen = bool;
