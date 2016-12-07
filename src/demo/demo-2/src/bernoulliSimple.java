@@ -32,7 +32,7 @@ public class bernoulliSimple
     	FileWriter timestepfw = new FileWriter(timestepData.getAbsoluteFile());
     	FileWriter linearfw = new FileWriter(linearEqs.getAbsoluteFile());
     	timestepfw.write("GraphNo, t,Y(t),External Adopters,Internal Adopters\n");
-    	linearfw.write("GraphNo, S(t+1),aCo,bCo,cCo\n");
+    	linearfw.write("GraphNo,Stadd1,aCo,bCo,cCo\n");
     	
     	Scanner scanner = new Scanner(System.in);
         System.out.println("How many nodes?");
@@ -42,11 +42,12 @@ public class bernoulliSimple
         System.out.println("Set coefficient of innovation (p):");
         double p = scanner.nextDouble();
         
-        for (int graphNumber=1; graphNumber<=200; graphNumber++) {		
+        for (int graphNumber=1; graphNumber<=500; graphNumber++) {		
         	createAndAdopt(timestepfw, linearfw, noNodes, edgeProb, p, graphNumber);
         }    
      	timestepfw.close();
      	linearfw.close();
+     	System.out.println("Finished");
     }
 
 
@@ -78,10 +79,10 @@ public class bernoulliSimple
          	//exportCSV files
          	timestepfw.write(graphNumber + "," + state.gett() + "," + state.getYt() + "," + state.getExtAdoptionCount() + "," + state.getIntAdoptionCount() + "\n");
          	linearfw.write(graphNumber + "," + (state.getYtadd1()-state.getYt()) + "," + 1 + "," + state.getYt() + "," + state.getYt()*state.getYt() + "\n");
-         	System.out.println("t: " +state.gett()+ "\t Y(t+1): " +state.getYtadd1()+ "\t Y(t): " +state.getYt());
+         	//System.out.println("t: " +state.gett()+ "\t Y(t+1): " +state.getYtadd1()+ "\t Y(t): " +state.getYt());
      		state.incrementT();
         } while (state.getYt() < noNodes);
-     	System.out.println("External adoptions: " + state.getExtAdoptionCount() + ", Internal adoptions: " +state.getIntAdoptionCount());
+     	//System.out.println("External adoptions: " + state.getExtAdoptionCount() + ", Internal adoptions: " +state.getIntAdoptionCount());
 	}
 
     
